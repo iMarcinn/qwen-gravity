@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwen Gravity — Agentic Coding Environment</title>
+    <meta name="description" content="Local AI coding assistant powered by Qwen2.5-Coder via Ollama">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🚀</div>
+                    Qwen Gravity
+                </div>
+                <div class="workspace-path" id="workspace-path">Loading...</div>
+                <button class="btn btn-open-folder" onclick="openFolderBrowser()">
+                    📂 Open Folder
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <button class="btn btn-new-chat" onclick="resetChat()">
+                    ✨ New Chat
+                </button>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">💬 Chat History</div>
+                    <div id="sessions-list">
+                        <div class="session-item" style="color: var(--text-muted); font-style: italic;">
+                            No chats yet
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">📁 Project Files</div>
+                    <div class="file-tree" id="file-tree">
+                        <div class="file-item" style="color: var(--text-muted); font-style: italic;">
+                            <span class="name">No files yet</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">💡 Decisions</div>
+                    <div id="decisions-list">
+                        <div class="decision-item" style="color: var(--text-muted); font-style: italic;">
+                            No decisions recorded
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-secondary" onclick="openSettings()">
+                    ⚙️ Settings
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="main">
+            <!-- Top Bar -->
+            <div class="topbar">
+                <button class="toggle-sidebar" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+                <span class="topbar-title">Chat</span>
+                <span class="model-badge" id="model-badge">qwen2.5-coder:7b</span>
+                <div class="status-dot" id="status-dot" title="Ollama status"></div>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages" id="messages">
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon">🚀</div>
+                    <div class="welcome-title">Qwen Gravity</div>
+                    <div class="welcome-subtitle">
+                        Your local AI coding assistant. I can create projects, write code, run commands, and help you
+                        build anything.
+                    </div>
+                    <div class="welcome-suggestions">
+                        <div class="suggestion" onclick="sendSuggestion(this)">Create a Flask REST API with SQLite</div>
+                        <div class="suggestion" onclick="sendSuggestion(this)">Build a React todo app</div>
+                        <div class="suggestion" onclick="sendSuggestion(this)">Set up a Python project with tests</div>
+                        <div class="suggestion" onclick="sendSuggestion(this)">List all files in the workspace</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <div id="attachment-preview" class="attachment-preview"></div>
+                    <div class="input-main">
+                        <button class="upload-btn" onclick="document.getElementById('file-input').click()" title="Attach files">📎</button>
+                        <input type="file" id="file-input" multiple style="display: none;" onchange="handleFileUpload(event)">
+                        <textarea id="message-input" placeholder="Describe what you want to build..." rows="1"
+                            onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
+                        <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send (Enter)">→</button>
+                    </div>
+                </div>
+                <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+                <button class="modal-close" onclick="closeSettings()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Workspace Directory</label>
+                    <input type="text" id="setting-workspace" placeholder="/path/to/workspace">
+                </div>
+                <div class="form-group">
+                    <label>Model Name</label>
+                    <div class="model-select-container">
+                        <select id="setting-model">
+                            <option value="">Loading models...</option>
+                        </select>
+                        <button class="refresh-btn" onclick="loadAvailableModels()" title="Refresh model list">↻ Refresh</button>
+                    </div>
+                    <div id="manual-model-container" style="display: none; margin-top: 8px;">
+                        <input type="text" id="setting-model-manual" placeholder="Enter model name manually">
+                    </div>
+                    <a href="#" class="toggle-manual-btn" onclick="toggleManualModel(event)">Can't find your model? Enter manually</a>
+                </div>
+                <div class="form-group">
+                    <label>Ollama URL</label>
+                    <input type="text" id="setting-ollama-url" value="http://localhost:11434" disabled>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Folder Browser Modal -->
+    <div class="modal-overlay" id="folder-modal">
+        <div class="modal folder-browser-modal">
+            <div class="modal-header">
+                <h2>📂 Open Folder</h2>
+                <button class="modal-close" onclick="closeFolderBrowser()">✕</button>
+            </div>
+            <div class="folder-browser-input">
+                <input type="text" id="folder-path-input" placeholder="Paste folder path here, e.g. C:\Users\Projects\MyApp" spellcheck="false" autocomplete="off">
+                <button class="btn btn-primary" id="folder-go-btn" onclick="goToPath()">Go</button>
+            </div>
+            <div class="folder-browser-path" id="folder-path">Loading...</div>
+            <div class="folder-browser-list" id="folder-list">
+                <div style="color:var(--text-muted);padding:20px;text-align:center;">Loading...</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeFolderBrowser()">Cancel</button>
+                <button class="btn btn-primary" id="select-folder-btn" onclick="selectFolder()">Open This Folder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js for code highlighting -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark-dimmed.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
