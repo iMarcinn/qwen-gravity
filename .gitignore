@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Project Specific (Personal Data - Keep these private)
+.agent_memory/
+workspace/
+.code-review-graph/
+
+# Build/Executable
+build/
+dist/
+*.spec
+
+# IDE
+.vscode/
+.idea/
+.gemini/
