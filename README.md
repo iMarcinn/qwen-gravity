@@ -1,9 +1,9 @@
 # qwen-gravity
 Qwen Gravity is an agentic coding assistant with a web interface. It allows you to chat with local LLMs (via Ollama) and give them access to a local workspace for coding tasks.
 
-<img width="1920" height="1080" alt="Screenshot (118)" src="https://github.com/user-attachments/assets/c412b56a-b911-43a2-941e-d47ddc3b2c81" />
+<img width="1280" height="720" alt="Screenshot (118)" src="https://github.com/user-attachments/assets/c412b56a-b911-43a2-941e-d47ddc3b2c81" /> 
 
-<img width="524" height="480" alt="Screenshot 2026-04-26 120736" src="https://github.com/user-attachments/assets/fb4356b6-75f2-4180-a1e6-ab7432390e41" />
+<img width="1280" height="720" alt="Screenshot (119)" src="https://github.com/user-attachments/assets/f5bd6d43-272a-425d-95cb-e65f2c1f60e6" />
 
 
 
